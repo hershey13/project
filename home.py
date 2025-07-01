@@ -31,7 +31,7 @@ colA, colB = st.columns(2)
 with colA:
     if st.button("✅ Submit"):
         if st.session_state.email and st.session_state.message and st.session_state.password:
-            st.switch_page("1_encrypt")
+            st.switch_page("1_encyrpt")
         else:
             st.warning("Please fill in all fields.")
 with colB:
