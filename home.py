@@ -1,33 +1,41 @@
 import streamlit as st
 
-st.set_page_config(page_title="Encrypt Message")
+st.set_page_config(page_title="🔐 Message Input", layout="centered")
 
-st.title("🔐 Message Input")
+st.title("🔐 Enter Message Details")
 
-if "email" not in st.session_state:
-    st.session_state["email"] = ""
-if "message" not in st.session_state:
-    st.session_state["message"] = ""
-if "password" not in st.session_state:
-    st.session_state["password"] = ""
+# Initialize session state
+for key in ["email", "message", "password"]:
+    if key not in st.session_state:
+        st.session_state[key] = ""
 
-def clear_field(field):
-    st.session_state[field] = ""
-
+# Input fields
 st.text_input("📧 Email", key="email")
-st.button("Clear Email", on_click=clear_field, args=["email"])
-
 st.text_area("💬 Message", key="message")
-st.button("Clear Message", on_click=clear_field, args=["message"])
+st.text_input("🔑 Password", type="password", key="password")
 
-st.text_input("🔑 Message Password", type="password", key="password")
-st.button("Clear Password", on_click=clear_field, args=["password"])
-
-col1, col2 = st.columns(2)
+# Individual clear buttons
+col1, col2, col3 = st.columns(3)
 with col1:
-    if st.button("✅ Submit"):
-        st.switch_page("Encrypt.py")
+    if st.button("🧹 Clear Email"):
+        st.session_state.email = ""
 with col2:
-    if st.button("🧹 Clear All"):
-        for key in ["email", "message", "password"]:
-            st.session_state[key] = ""
+    if st.button("🧹 Clear Message"):
+        st.session_state.message = ""
+with col3:
+    if st.button("🧹 Clear Password"):
+        st.session_state.password = ""
+
+# Submit or Clear All
+colA, colB = st.columns(2)
+with colA:
+    if st.button("✅ Submit"):
+        if st.session_state.email and st.session_state.message and st.session_state.password:
+            st.switch_page("1_Encrypt")
+        else:
+            st.warning("Please fill in all fields.")
+with colB:
+    if st.button("❌ Clear All"):
+        st.session_state.email = ""
+        st.session_state.message = ""
+        st.session_state.password = ""
