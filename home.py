@@ -1,41 +1,29 @@
 import streamlit as st
+from utils.api import send_otp, log_input
 
 st.set_page_config(page_title="🔐 Message Input", layout="centered")
+st.title("🔐 Step 1: Enter Details")
 
-st.title("🔐 Enter Message Details")
+email = st.text_input("📧 Email")
+message = st.text_area("💬 Message")
+password = st.text_input("🔑 Password", type="password")
 
-# Initialize session state
-for key in ["email", "message", "password"]:
-    if key not in st.session_state:
-        st.session_state[key] = ""
-
-# Input fields
-st.text_input("📧 Email", key="email")
-st.text_area("💬 Message", key="message")
-st.text_input("🔑 Password", type="password", key="password")
-
-# Individual clear buttons
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 with col1:
-    if st.button("🧹 Clear Email"):
-        st.session_state.email = ""
-with col2:
-    if st.button("🧹 Clear Message"):
-        st.session_state.message = ""
-with col3:
-    if st.button("🧹 Clear Password"):
-        st.session_state.password = ""
-
-# Submit or Clear All
-colA, colB = st.columns(2)
-with colA:
     if st.button("✅ Submit"):
-        if st.session_state.email and st.session_state.message and st.session_state.password:
-            st.switch_page("1_encyrpt")
+        if email and message and password:
+            log_result = log_input(email, message, password)
+            otp_result = send_otp(email)
+            if log_result["success"] and otp_result["success"]:
+                st.session_state["email"] = email
+                st.session_state["message"] = message
+                st.session_state["password"] = password
+                st.success("OTP sent to your email.")
+                st.switch_page("1_Encrypt")
+            else:
+                st.error(log_result.get("error") or otp_result.get("error"))
         else:
             st.warning("Please fill in all fields.")
-with colB:
-    if st.button("❌ Clear All"):
-        st.session_state.email = ""
-        st.session_state.message = ""
-        st.session_state.password = ""
+with col2:
+    if st.button("🧹 Clear All"):
+        st.experimental_rerun()
